@@ -204,29 +204,29 @@ def cosmx(
             else:
                 logger.warning(f"FOV {fov} not found in counts file. Skipping image {fname}.")
             #Added this stuff to also load cell_overlay
-            if cell_overlay:
-                for fname in os.listdir(path / cell_overlay):
-                    if fname.endswith(file_extensions):
-                        fov = str(int(pat.findall(fname)[0]))
-                        if fov in fovs_counts:
-                            aff = affine_transforms_to_global[fov]
-                            im = imread(path / cell_overlay / fname, **imread_kwargs).squeeze()
-                            flipped_im = im
-                            
-                            parsed_im = Image2DModel.parse(
-                                flipped_im,
-                                transformations={
-                                    fov: Identity(),
-                                    "global": aff,
-                                    "global_only_image": aff,
-                                },
-                                dims=("y", "x", "c"),
-                                rgb=None,
-                                **image_models_kwargs,
-                            )
-                            images[f"{fov}_overlay"] = parsed_im
-                        else:
-                            logger.warning(f"FOV {fov} not found in counts file. Skipping image {fname}.")
+    if cell_overlay:
+        for fname in os.listdir(path / cell_overlay):
+            if fname.endswith(file_extensions):
+                fov = str(int(pat.findall(fname)[0]))
+                if fov in fovs_counts:
+                    aff = affine_transforms_to_global[fov]
+                    im = imread(path / cell_overlay / fname, **imread_kwargs).squeeze()
+                    flipped_im = im
+                    
+                    parsed_im = Image2DModel.parse(
+                        flipped_im,
+                        transformations={
+                            fov: Identity(),
+                            "global": aff,
+                            "global_only_image": aff,
+                        },
+                        dims=("y", "x", "c"),
+                        rgb=None,
+                        **image_models_kwargs,
+                    )
+                    images[f"{fov}_overlay"] = parsed_im
+                else:
+                    logger.warning(f"FOV {fov} not found in counts file. Skipping image {fname}.")
 
     # read labels
     labels = {}
